@@ -1,0 +1,55 @@
+# Alpine-Maintainer: Natanael Copa <ncopa@alpinelinux.org>
+# Maintainer: Felix Xing <fxing@qnx.com>
+
+pkgname=libsecret
+pkgver=0.21.7
+pkgrel=0
+pkgdesc="Library for storing and retrieving passwords and other secrets"
+url="https://gnome.pages.gitlab.gnome.org/libsecret"
+arch="all"
+license="LGPL-2.1-or-later"
+depends="glib libgcrypt"
+depends_dev="glib-dev
+            libgcrypt-dev
+            libgpg-error-dev"
+makedepends="$depends_dev
+            libxslt-dev
+            docbook-xsl
+            gobject-introspection-dev
+            vala
+            meson
+            dbus"
+checkdepends="python3-dbus python3-gobject3"
+options="!check" # gjs is in community now
+subpackages="$pkgname-static $pkgname-dev $pkgname-doc $pkgname-lang"
+source="https://gitlab.gnome.org/GNOME/libsecret/-/archive/$pkgver/libsecret-$pkgver.tar.bz2
+        fix-upstream-typo.patch"
+
+build() {
+    CC=gcc \
+    CXX=g++ \
+    CFLAGS="$CFLAGS -O2 -DNDEBUG" \
+    CXXFLAGS="$CXXFLAGS -O2 -DNDEBUG" \
+    CPPFLAGS="$CPPFLAGS -O2 -DNDEBUG" \
+    abuild-meson \
+        -Db_lto=false \
+        --default-library=both \
+        -Dc_args="-DHAVE_CMSGCRED" \
+        -Dgtk_doc=false \
+        output
+    meson compile -C output
+}
+
+check() {
+    meson test --print-errorlogs -C output
+}
+
+package() {
+    LD_LIBRARY_PATH="$builddir/output/libsecret:$LD_LIBRARY_PATH" \
+    DESTDIR="$pkgdir" meson install --no-rebuild -C output || true
+}
+
+sha512sums="
+b1769d01edacf7d52c4cd66746b24bf426ca1dbd8ef13009f8f5b4b502c1e9123ccfc6801f9880313af222d072b6a0cd8a3b3bb4d281da30fe9e1bf0a2af8267  libsecret-0.21.7.tar.bz2
+2f2789b4dfbfbeac6bbf891697b48acf356e4c0ce4040ace4630074050ebe6c28f540250b469c314e275872cf4887496948a488875365d17423be811a184c980  fix-upstream-typo.patch
+"
