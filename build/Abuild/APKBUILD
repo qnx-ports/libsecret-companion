@@ -3,7 +3,7 @@
 
 pkgname=libsecret
 pkgver=0.21.7
-pkgrel=${pkgrel:-0}
+pkgrel=0
 pkgdesc="Library for storing and retrieving passwords and other secrets"
 url="https://gnome.pages.gitlab.gnome.org/libsecret"
 arch="all"
@@ -49,7 +49,6 @@ package() {
     DESTDIR="$pkgdir" meson install --no-rebuild -C output || true
 }
 
-options="$options ${DISABLE_CHECK:+!check}"
 sha512sums="
 b1769d01edacf7d52c4cd66746b24bf426ca1dbd8ef13009f8f5b4b502c1e9123ccfc6801f9880313af222d072b6a0cd8a3b3bb4d281da30fe9e1bf0a2af8267  libsecret-0.21.7.tar.bz2
 2f2789b4dfbfbeac6bbf891697b48acf356e4c0ce4040ace4630074050ebe6c28f540250b469c314e275872cf4887496948a488875365d17423be811a184c980  fix-upstream-typo.patch
